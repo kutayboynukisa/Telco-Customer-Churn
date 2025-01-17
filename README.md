@@ -1,60 +1,58 @@
-# Data Preprocessing Phase - Telco Customer Churn Project
+## Telco Customer Churn Project
 
-This document outlines the steps performed during the data preprocessing phase of the Telco Customer Churn project. Each step is explained in detail, including the reasoning behind key decisions.
-
-## **1. Dataset Import and Initial Setup**
-- **Dataset:** The dataset was imported from a CSV file named `WA_Fn-UseC_-Telco-Customer-Churn.csv`.
-- **Features and Target:**
-  - Features (`X`): All columns except `customerID` and `Churn`.
-  - Target (`y`): The `Churn` column, indicating whether a customer churned (Yes) or not (No).
-
-## **2. Data Cleaning**
-- **Conversion of `TotalCharges`:**
-  - The `TotalCharges` column was initially of `object` type, even though it represents numerical data.
-  - It was converted to `float` using `pd.to_numeric`, with non-convertible values replaced by `NaN`.
-  - Missing values in `TotalCharges` were filled using the column's mean.
-
-## **3. Feature Categorization**
-- **Categorical Features:**
-  - **One-Hot Encoded Features:** Nominal (unordered) categorical columns such as `gender`, `MultipleLines`, `InternetService`, etc.
-  - **Label Encoded Features:** Ordinal (ordered) or binary categorical columns such as `SeniorCitizen`, `Partner`, and `Contract`.
-- **Numerical Features:**
-  - Continuous numerical columns such as `tenure`, `MonthlyCharges`, and `TotalCharges`.
-
-## **4. Encoding and Scaling**
-- **Why `LabelEncoder` for Ordinal Features?**
-  - Ordinal features, such as `Contract` (Month-to-month, One year, Two year), have a meaningful order.
-  - Using `LabelEncoder` ensures that the ordinal relationship is preserved.
-  - For binary categorical columns, `LabelEncoder` simplifies the encoding process.
-- **Why `OneHotEncoder` for Nominal Features?**
-  - Nominal features have no intrinsic order, so they are one-hot encoded to ensure equal treatment of all categories.
-- **Scaling Numerical Features:**
-  - Numerical columns were standardized using `StandardScaler` to ensure all features have a mean of 0 and a standard deviation of 1.
-
-## **5. Missing Values**
-- **Handling Missing Data:**
-  - Missing values in numerical features were filled with the mean using `SimpleImputer`.
-  - This approach is simple yet effective for continuous data, especially when the number of missing values is small.
-
-## **6. Splitting the Dataset**
-- The dataset was split into training and test sets using an 80-20 ratio.
-- Stratification was applied to ensure the target variable's distribution remains consistent across both sets.
-
-## **7. Use of ColumnTransformer and Pipeline**
-- A `ColumnTransformer` was used to streamline preprocessing steps for numerical and nominal features:
-  - **Numerical Pipeline:** Imputation and scaling were combined using `SimpleImputer` and `StandardScaler`.
-  - **Categorical Pipeline:** One-hot encoding was applied to nominal features.
-- This modular approach improves code clarity and maintainability.
+### Updated Documentation: Logistic Regression Model and Evaluation Phase
 
 ---
 
-### **Key Takeaways**
-1. **Choice of Encoders:**
-   - `LabelEncoder` was chosen for ordinal and binary features to preserve meaningful order.
-   - `OneHotEncoder` was used for nominal features to treat categories equally.
-2. **Scaling:**
-   - Standardizing numerical features ensures that all features contribute equally to the model.
-3. **Efficiency:**
-   - Using `ColumnTransformer` and pipelines simplifies preprocessing and ensures reproducibility.
+### Model Selection and Training
 
-The data preprocessing phase has prepared the dataset for the next steps: model building and evaluation. If further preprocessing is needed during model tuning, adjustments can be made without disrupting the current structure.
+#### 1. Model Selection
+Before choosing Logistic Regression, several models were evaluated, including Random Forest, XGBoost, and Support Vector Machine. 
+- **Evaluation Metric:** Accuracy score was used to compare model performances.
+- **Reason for Choosing Logistic Regression:** Logistic Regression outperformed other models in accuracy, achieving a score of 81.12%, which was the highest among the tested models.
+
+#### 2. Hyperparameter Tuning
+- GridSearchCV was used to optimize the regularization parameter C for Logistic Regression.
+- Parameters tested: {'C': [0.1, 1, 10]}.
+- Best parameter: C = 0.1.
+
+#### 3. Model Training
+The Logistic Regression model was trained on the preprocessed training dataset using the optimal hyperparameters obtained from GridSearchCV.
+
+---
+
+### Model Evaluation
+
+#### 1. Accuracy and Classification Report
+- The model achieved an accuracy score of **81.12%** on the test dataset.
+- A detailed classification report was generated, including precision, recall, F1-score, and support for each class.
+
+#### 2. Confusion Matrix
+- The confusion matrix was visualized to better understand the model's performance in distinguishing between churned and non-churned customers.
+
+#### 3. Feature Importance
+- **Why Use np.abs for Coefficients?**
+  - The absolute values of the Logistic Regression coefficients were used to evaluate feature importance. This approach focuses on the magnitude of the effect, regardless of whether it is positive or negative.
+  - Features with higher absolute coefficients have a stronger impact on churn prediction.
+- **Visualization:**
+  - Feature importance was visualized using a horizontal bar plot to identify the most influential features.
+
+#### 4. ROC-AUC Curve
+- The Receiver Operating Characteristic (ROC) curve was plotted to evaluate the model's performance at various classification thresholds.
+- **AUC Value:** The model achieved an AUC score of **0.85**, indicating strong discriminatory power.
+
+---
+
+### Key Takeaways from the Logistic Regression Phase
+
+1. **Model Selection:** Logistic Regression was chosen based on its superior accuracy score compared to other models.
+2. **Feature Analysis:**
+   - The analysis highlighted the features most associated with churn, providing insights for targeted business strategies.
+   - The absolute values of coefficients allowed for an unbiased comparison of feature importance.
+3. **Visualization:**
+   - Confusion matrix, feature importance bar plot, and ROC-AUC curve provided a comprehensive view of model performance.
+4. **Performance Summary:**
+   - Accuracy: 81.12%
+   - AUC: 0.85
+
+---
